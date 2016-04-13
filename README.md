@@ -1,2 +1,2 @@
 # finetune_net
-finetune net
+finetune googlenet using imagenet
