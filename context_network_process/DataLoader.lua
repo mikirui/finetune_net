@@ -108,7 +108,7 @@ function DataLoader:getBatch(opt)
     --local img = self.h5_file:read('/images'):partial({ix,ix},{1,self.num_channels},
                           --  {1,self.max_image_size},{1,self.max_image_size})
     --img_batch_raw[i] = CI(img)    
-    img_batch_raw[i] = self.ft_matrix[i]    --get the ith image feature
+    img_batch_raw[i] = self.ft_matrix[ix]    --get the ixth image feature
 
     -- fetch the sequence labels
     local ix1 = self.label_start_ix[ix]
