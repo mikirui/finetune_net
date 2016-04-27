@@ -1,7 +1,19 @@
-context network暂时采用CI_googlenet.lua里面的模型，输入为3*96*96图片，输出为1024维向量.
+context network：
+googlenet模型: 
+/home/qianlima/torch-test/googlenet/googlenet2.lua，即在全模型的基础上只改最后一层池化层的核为3*3，输入为3*96*96图片，输出为1024维向量.
 
-CI_googlenet.lua: 里面的模型是在googlenet最后一层池化层核由7*7变为3*3.
+微调代码：
+/home/qianlima/torch-test/fgi_one_norm.lua
 
-context_network.lua: 用于提取图片的1024维特征并保存到'..../cocotalk384_ft_matrix.t7'.
+微调后模型：
+/home/qianlima/save/Exia:1461484089:1.dat，文件保存的是最好的一次实验结果（dp.experiment)
 
-DataLoader.lua: 更改neuraltalk2的DataLoader.lua,在每次getBatch得到1024维特征而不是图像像素.
+用微调后模型得到每张图片CI代码：
+/home/qianlima/torch-test/datapro/context_network.lua
+
+mscoco图片CI保存文件：
+/home/qianlima/ylh_test/resize_img/cocotalk384_ft_matrix.t7
+
+修改后的dataloader:
+/home/qianlima/torch-test/datapro/DataLoader.lua（改过地方均标有rui)
+DataLoader:getBatch()得到data调用的域：data.images得到原图像素信息和以前一样，data.feature得到1024维特征
