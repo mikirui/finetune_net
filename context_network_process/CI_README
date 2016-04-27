@@ -22,4 +22,4 @@ flickr30k图片CI保存文件：
 
 修改后的dataloader:
 /home/qianlima/torch-test/datapro/DataLoader.lua（改过地方均标有rui)
-DataLoader:getBatch()得到data调用的域：data.images得到原图像素信息和以前一样，data.feature得到1024维特征
+DataLoader:getBatch()得到data调用的域：data.images得到原图像素信息和以前一样，data.cI得到1024维特征
