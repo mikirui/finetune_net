@@ -1,9 +1,8 @@
 require 'hdf5'
-require 'cudnn'
+
 local utils = require 'misc.utils'
 
 local DataLoader = torch.class('DataLoader')
-ft_matrix_path = '/home/qianlima/ylh_test/resize_img/cocotalk384_ft_matrix.t7'  --modify by rui
 
 function DataLoader:__init(opt)
   
@@ -28,8 +27,8 @@ function DataLoader:__init(opt)
   print(string.format('read %d images of size %dx%dx%d', self.num_images, 
             self.num_channels, self.max_image_size, self.max_image_size))
 
-  --*********load the image feature from feature matrix file(rui)***************
-  self.ft_matrix = torch.load(ft_matrix_path)
+  -- load the image feature from feature matrix
+  self.ft_matrix = torch.load(opt.ft_matrix_path)
 
   -- load in the sequence data
   local seq_size = self.h5_file:read('/labels'):dataspaceSize()
@@ -84,13 +83,16 @@ function DataLoader:getBatch(opt)
   local split = utils.getopt(opt, 'split') -- lets require that user passes this in, for safety
   local batch_size = utils.getopt(opt, 'batch_size', 5) -- how many images get returned at one time (to go through CNN)
   local seq_per_img = utils.getopt(opt, 'seq_per_img', 5) -- number of sequences to return per image
+  local cuda = utils.getopt(opt, 'cuda', true)
 
+  if cuda then require 'cutorch' end
+  
   local split_ix = self.split_ix[split]
   assert(split_ix, 'split ' .. split .. ' not found.')
 
   -- pick an index of the datapoint to load next
-  --***************************modify by rui******************************
-  local img_batch_raw = torch.CudaTensor(batch_size, 1024)    --modify by rui
+  local img_batch_raw = torch.ByteTensor(batch_size, 3, 384, 384)
+  local cI = cuda and torch.CudaTensor(batch_size, 1024) or torch.FloatTensor(batch_size, 1024)
   local label_batch = torch.LongTensor(batch_size * seq_per_img, self.seq_length)
   local max_index = #split_ix
   local wrapped = false
@@ -104,11 +106,13 @@ function DataLoader:getBatch(opt)
     ix = split_ix[ri]
     assert(ix ~= nil, 'bug: split ' .. split .. ' was accessed out of bounds with ' .. ri)
 
-    -- fetch the image from h5(*************modify by rui*********************)
-    --local img = self.h5_file:read('/images'):partial({ix,ix},{1,self.num_channels},
-                          --  {1,self.max_image_size},{1,self.max_image_size})
-    --img_batch_raw[i] = CI(img)    
-    img_batch_raw[i] = self.ft_matrix[ix]    --get the ixth image feature
+    -- fetch the image from h5
+    local img = self.h5_file:read('/images'):partial({ix,ix},{1,self.num_channels},
+                            {1,self.max_image_size},{1,self.max_image_size})
+    img_batch_raw[i] = img
+    
+    -- fetch cI
+    cI[i] = cuda and self.ft_matrix[ix] or self.ft_matrix[ix]:float()
 
     -- fetch the sequence labels
     local ix1 = self.label_start_ix[ix]
@@ -140,6 +144,7 @@ function DataLoader:getBatch(opt)
 
   local data = {}
   data.images = img_batch_raw
+  data.cI = cI
   data.labels = label_batch:transpose(1,2):contiguous() -- note: make label sequences go down as columns
   data.bounds = {it_pos_now = self.iterators[split], it_max = #split_ix, wrapped = wrapped}
   data.infos = infos
