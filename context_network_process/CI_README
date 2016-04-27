@@ -14,6 +14,12 @@ googlenet模型:
 mscoco图片CI保存文件：
 /home/qianlima/ylh_test/resize_img/cocotalk384_ft_matrix.t7
 
+flickr8k图片CI保存文件：
+/home/qianlima/ylh_test/process_flickr/flickr8ktalk384_ft_matrix.t7
+
+flickr30k图片CI保存文件：
+/home/qianlima/ylh_test/process_flickr/flickr30k/flickr30ktalk384_ft_matrix.t7
+
 修改后的dataloader:
 /home/qianlima/torch-test/datapro/DataLoader.lua（改过地方均标有rui)
 DataLoader:getBatch()得到data调用的域：data.images得到原图像素信息和以前一样，data.feature得到1024维特征
