@@ -32,6 +32,8 @@ function layer:build_model()
 	elseif(self.comb == 2) then
 		self.core:add(self.cnn)
 		self.core:add(self.cnn)
+	elseif(self.comb == 1) then
+		self.core:add(self.cnn)
 	end
 	self.model:add(self.norm)
 	self.model:add(self.core)
@@ -69,7 +71,7 @@ function layer:accUpdateGradParameters(input, gradOutput, lr)
 end
 
 function layer:zeroGradParameters()
-	self.mode:zeroGradParameters()
+	self.model:zeroGradParameters()
 end
 
 function layer:updateParameters(learningRate)
