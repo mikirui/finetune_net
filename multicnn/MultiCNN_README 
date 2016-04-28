@@ -1,0 +1,41 @@
+1. MultiCNN.lua:
+
+1)模型：全模型（raw_googlenet.t7）
+
+2)接口调用：
+opt = 
+{
+	comb = 3,                 --2或者3，表示多少个cnn组合
+	cnn_path = '/home/qianlima/torch-test/raw_googlenet.t7',  --训练好模型位置
+	cnn_learningrate = 0.01,     --googlenet学习率，0或者空代表不训练googlenet
+	linear_learningrate = 0.1    --线性层学习率
+}
+
+nn.MultiCNN(opt)
+
+3)输入输出：
+输入为nn.SpatialGlimpse2()的输出，因此应在前面接nn.SpatialGlimpse2()模块
+输出为2048维向量
+
+
+
+2.MultiCNN_cut.lua:
+
+1)模型：去掉两层inception模块(raw_googlenet_cut.t7)
+
+2)接口调用：
+opt = 
+{
+	comb = 3,                 --2或者3，表示多少个cnn组合
+	cnn_path = '/home/qianlima/torch-test/raw_googlenet_cut.t7',  --训练好模型位置
+	cnn_learningrate = 0.01,     --googlenet学习率，0或者空代表不训练googlenet
+	linear_learningrate = 0.1    --线性层学习率
+}
+
+nn.MultiCNN_cut(opt)
+
+
+3)输入输出：
+输入为nn.SpatialGlimpse2()的输出，因此应在前面接nn.SpatialGlimpse2()模块
+输出为2048维向量
+	
