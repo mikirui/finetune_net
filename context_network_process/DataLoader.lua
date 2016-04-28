@@ -1,5 +1,7 @@
 require 'hdf5'
 
+require 'cutorch'
+
 local utils = require 'misc.utils'
 
 local DataLoader = torch.class('DataLoader')
@@ -84,14 +86,12 @@ function DataLoader:getBatch(opt)
   local batch_size = utils.getopt(opt, 'batch_size', 5) -- how many images get returned at one time (to go through CNN)
   local seq_per_img = utils.getopt(opt, 'seq_per_img', 5) -- number of sequences to return per image
   local cuda = utils.getopt(opt, 'cuda', true)
-
-  if cuda then require 'cutorch' end
   
   local split_ix = self.split_ix[split]
   assert(split_ix, 'split ' .. split .. ' not found.')
 
   -- pick an index of the datapoint to load next
-  local img_batch_raw = torch.ByteTensor(batch_size, 3, 384, 384)
+  local img_batch_raw = torch.ByteTensor(batch_size, 3, 256, 256)
   local cI = cuda and torch.CudaTensor(batch_size, 1024) or torch.FloatTensor(batch_size, 1024)
   local label_batch = torch.LongTensor(batch_size * seq_per_img, self.seq_length)
   local max_index = #split_ix
