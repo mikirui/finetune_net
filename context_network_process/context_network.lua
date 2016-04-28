@@ -10,14 +10,14 @@ require 'dp'
 require 'dpnn'
 require 'optim'
 require 'norm_cuda'
-require 'norm_cuda2'
+require 'norm_cuda_con'
 
 --h5_file_path = '/home/qianlima/ylh_test/resize_img/cocotalk384.h5'
 --ft_matrix_path = '/home/qianlima/ylh_test/resize_img/cocotalk384_ft_matrix.t7'
---h5_file_path = '/home/qianlima/ylh_test/process_flickr/flickr8ktalk384.h5'
---ft_matrix_path = '/home/qianlima/ylh_test/process_flickr/flickr8ktalk384_ft_matrix.t7'
-h5_file_path = '/home/qianlima/ylh_test/process_flickr/flickr30k/flickr30ktalk384.h5'
-ft_matrix_path = '/home/qianlima/ylh_test/process_flickr/flickr30k/flickr30ktalk384_ft_matrix.t7'
+h5_file_path = '/home/qianlima/ylh_test/process_flickr/flickr8ktalk384.h5'
+ft_matrix_path = '/home/qianlima/ylh_test/process_flickr/flickr8ktalk384_ft_matrix.t7'
+--h5_file_path = '/home/qianlima/ylh_test/process_flickr/flickr30k/flickr30ktalk384.h5'
+--ft_matrix_path = '/home/qianlima/ylh_test/process_flickr/flickr30k/flickr30ktalk384_ft_matrix.t7'
 model_path = '/home/qianlima/torch-test/raw_googlenet.t7'
 
 ---1.read h5 file to get image file information---
@@ -32,9 +32,9 @@ ft_matrix = torch.CudaTensor(num_images,1024):fill(0)   --feature matrix,each im
 
 
 ---2.define the model(sample & googlenet)------
-cnn = torch.load(exp_path)
+cnn = torch.load(model_path)
 model = nn.Sequential()
-model:add(nn.norm_cuda2())    --norm_cuda
+model:add(nn.norm_cuda_con())    --norm_cuda
 model:add(cudnn.SpatialAveragePooling(4,4,4,4))    --SpatialAveragePooling
 model:add(cnn)    --googlenet
 
@@ -57,4 +57,30 @@ do
 end
 
 torch.save(ft_matrix_path,ft_matrix)
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
