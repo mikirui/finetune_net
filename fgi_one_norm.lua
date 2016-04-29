@@ -42,13 +42,13 @@ cmd:option('--verbose', false, 'print verbose messages')
 cmd:option('--progress', true, 'print progress bar')
 cmd:option('--nThread', 2, 'allocate threads for loading images from disk. Requires threads-ffi.')
 cmd:option('--LCN', false, 'use Local Constrast Normalization as in the original paper. Requires inn (imagine-nn)')
-cmd:option('--resume',false,'continue experiment on a saved model')
+cmd:option('--resume',true,'continue experiment on a saved model')
 cmd:text()
 
 opt = cmd:parse(arg or {})
 
-opt.trainPath = (opt.trainPath == '') and paths.concat(opt.dataPath, 'trainsubset') or opt.trainPath
-opt.validPath = (opt.validPath == '') and paths.concat(opt.dataPath, 'valsubset') or opt.validPath
+opt.trainPath = (opt.trainPath == '') and paths.concat(opt.dataPath, 'ILSVRC2012_img_train') or opt.trainPath
+opt.validPath = (opt.validPath == '') and paths.concat(opt.dataPath, 'ILSVRC2012_img_val') or opt.validPath
 opt.metaPath = (opt.metaPath == '') and paths.concat(opt.dataPath, 'metadata') or opt.metaPath
 table.print(opt)
 
@@ -80,29 +80,32 @@ gsize = 96   --glimpse size
 --	print('loading the saved experiment')
 --	model = torch.load('F-G-I_stride.t7')
 if opt.resume then
-	print('loading the saved experiment for change lr')
-	exp = torch.load('/home/qianlima/save/Exia:1460821117:1.dat')
-	model = exp._model
+	print('loading the saved model...')
+	exp = torch.load('/home/qianlima/save/Exia:1461484089:1.dat')   --not cut model
+	whole = exp._model
+	seq = whole:get(1)
+	d0 = seq:get(3)
+
+	model = nn.Sequential()   --input: batch*channel*384*384
+	model:add(nn.norm_cuda())
+	d = cudnn.SpatialAveragePooling(4,4,4,4)
+	d.accGradParameters = function() return end
+	model:add(d)
+	d1 = seq:get(4)
+	model:add(d0)
+	model:add(d1)
+	model:add(nn.NaN(nn.LogSoftMax()))
+	model = model:cuda()
+	print(model)
 else
---combine the new models
+print('loading the model to be finetune initially...')
 d0 = torch.load('googlenet2_2.t7')
---first combination
-model = nn.Sequential()   --input: batch*channel*wi*hi
+model = nn.Sequential()   --input: batch*channel*384*384
 model:add(nn.norm_cuda())
 d = cudnn.SpatialAveragePooling(4,4,4,4)
 d.accGradParameters = function() return end
 model:add(d)
---core = nn.Sequential()
---d0.accGradParameters = function() return end
---core = nn.Sequential()
---core:add(d0)
---core:add(d0)
---core:add(nn.NaN(nn.Linear(2496,4096)))
 d1 = nn.NaN(nn.Linear(1024,1000))
---d2 = nn.NaN(nn.LogSoftMax())
---d1:add(nn.NaN(nn.Linear(7488,4096)))
---d1:add(nn.NaN(nn.Linear(4096,1000)))
---d1:add(nn.NaN(nn.LogSoftMax()))
 model:add(d0)
 model:add(d1)
 model:add(nn.NaN(nn.LogSoftMax()))
