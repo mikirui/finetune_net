@@ -88,7 +88,6 @@ if opt.resume then
 	d0 = seq:get(3)
 
 	if BGR then
-		d0 = seq:get(3)
 		v1 = d0:get(1)
 		local w = v1.weight:clone()
 		-- swap weights to R and B channels

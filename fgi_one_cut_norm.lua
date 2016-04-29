@@ -85,9 +85,9 @@ if opt.resume then
 	exp = torch.load('/home/qianlima/save/Exia:1461513056:1.dat')   --not cut model
 	whole = exp._model
 	seq = whole:get(1)
+	d0 = seq:get(3)
 
 	if BGR then
-		d0 = seq:get(3)
 		v1 = d0:get(1)
 		local w = v1.weight:clone()
 		-- swap weights to R and B channels
