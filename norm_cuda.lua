@@ -9,9 +9,9 @@ end
 function norm_cuda:updateOutput(input)
    self.output = input:cuda()
    local mean = torch.CudaTensor(input:size())
-   mean[{{}, {1}, {}, {}}] = -104
+   mean[{{}, {1}, {}, {}}] = -123
    mean[{{}, {2}, {}, {}}] = -117
-   mean[{{}, {3}, {}, {}}] = -123
+   mean[{{}, {3}, {}, {}}] = -104
    self.output:mul(255):add(mean)
    --print(self.output:size())
    return self.output

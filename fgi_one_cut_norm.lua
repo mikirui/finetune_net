@@ -79,12 +79,22 @@ gsize = 96   --glimpse size
 --if opt.resume then
 --	print('loading the saved experiment')
 --	model = torch.load('F-G-I_stride.t7')
+BGR = true
 if opt.resume then
 	print('loading the saved model...')
 	exp = torch.load('/home/qianlima/save/Exia:1461513056:1.dat')   --not cut model
 	whole = exp._model
 	seq = whole:get(1)
-	d0 = seq:get(3)
+
+	if BGR then
+		d0 = seq:get(3)
+		v1 = d0:get(1)
+		local w = v1.weight:clone()
+		-- swap weights to R and B channels
+		print('converting first layer conv filters from BGR to RGB...')
+		v1.weight[{ {}, 1, {}, {} }]:copy(w[{ {}, 3, {}, {} }])
+		v1.weight[{ {}, 3, {}, {} }]:copy(w[{ {}, 1, {}, {} }])
+	end
 
 	model = nn.Sequential()   --input: batch*channel*384*384
 	model:add(nn.norm_cuda())
@@ -100,6 +110,14 @@ if opt.resume then
 else
 --combine the new models
 d0 = torch.load('one.t7')
+
+v1 = d0:get(1)
+local w = v1.weight:clone()
+-- swap weights to R and B channels
+print('converting first layer conv filters from BGR to RGB...')
+v1.weight[{ {}, 1, {}, {} }]:copy(w[{ {}, 3, {}, {} }])
+v1.weight[{ {}, 3, {}, {} }]:copy(w[{ {}, 1, {}, {} }])
+
 --first combination
 model = nn.Sequential()   --input: batch*channel*wi*hi
 model:add(nn.norm_cuda())
