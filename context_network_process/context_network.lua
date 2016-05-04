@@ -12,12 +12,12 @@ require 'optim'
 require 'norm_cuda'
 require 'norm_cuda_con'
 
---h5_file_path = '/home/qianlima/ylh_test/resize_img/cocotalk384.h5'
---ft_matrix_path = '/home/qianlima/ylh_test/resize_img/cocotalk384_ft_matrix2.t7'
-h5_file_path = '/home/qianlima/ylh_test/process_flickr/flickr8ktalk384.h5'
-ft_matrix_path = '/home/qianlima/ylh_test/process_flickr/flickr8ktalk384_ft_matrix2.t7'
---h5_file_path = '/home/qianlima/ylh_test/process_flickr/flickr30k/flickr30ktalk384.h5'
---ft_matrix_path = '/home/qianlima/ylh_test/process_flickr/flickr30k/flickr30ktalk384_ft_matrix2.t7'
+h5_file_path = '/home/qianlima/torch-test/DRAM/dataset/MSCOCO/coco384/cocotalk384.h5'
+ft_matrix_path = '/home/qianlima/torch-test/DRAM/dataset/MSCOCO/coco384/cocotalk384_ft_matrix.t7'
+--h5_file_path = '/home/qianlima/torch-test/DRAM/dataset/Flickr8k/f8k384/flickr8ktalk384.h5'
+--ft_matrix_path = '/home/qianlima/torch-test/DRAM/dataset/Flickr8k/f8k384/flickr8ktalk384_ft_matrix.t7'
+--h5_file_path = '/home/qianlima/torch-test/DRAM/dataset/Flickr30k/f30k384/flickr30ktalk384.h5'
+--ft_matrix_path = '/home/qianlima/torch-test/DRAM/dataset/Flickr30k/f30k384/flickr30ktalk384_ft_matrix.t7'
 model_path = '/home/qianlima/torch-test/raw_googlenet.t7'
 
 ---1.read h5 file to get image file information---
@@ -57,30 +57,3 @@ do
 end
 
 torch.save(ft_matrix_path,ft_matrix)
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
